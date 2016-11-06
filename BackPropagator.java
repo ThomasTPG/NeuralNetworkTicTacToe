@@ -20,7 +20,7 @@ public class BackPropagator {
     int numberOfHiddenNodes;
     int numberOfOutputNodes;
     FileTools mFileTools;
-    double infinitesimalChange = 0.001;
+    double infinitesimalChange = 0.01;
 
     public BackPropagator(Context c)
     {
@@ -124,26 +124,59 @@ public class BackPropagator {
             }
 
             //Now change the weights by the required value
-            //Change the input weights
-            float[][] weightIn = mFileTools.readInputWeights();
-            for (int dd = 0; dd < numberOfInputNodes; dd ++)
+            if (resultOfGame == COMPUTERWIN || resultOfGame == DRAW)
             {
-                for (int ee = 0; ee < numberOfHiddenNodes; ee++)
+                //Change the input weights
+                float[][] weightIn = mFileTools.readInputWeights();
+                for (int dd = 0; dd < numberOfInputNodes; dd ++)
                 {
-                    weightIn[dd][ee] = weightIn[dd][ee] - (float) (infinitesimalChange * derivitiveMatrixIN[dd][ee]);
+                    for (int ee = 0; ee < numberOfHiddenNodes; ee++)
+                    {
+                        weightIn[dd][ee] = weightIn[dd][ee] + (float) (infinitesimalChange * derivitiveMatrixIN[dd][ee]);
+                    }
                 }
-            }
+                mFileTools.writeWeightFile(weightIn,false);
 
-            //Change the hidden weights
-            float[][] weightOut = mFileTools.readOutputWeights();
-            for (int dd = 0; dd < numberOfHiddenNodes; dd ++)
+
+                //Change the hidden weights
+                float[][] weightOut = mFileTools.readOutputWeights();
+                for (int dd = 0; dd < numberOfHiddenNodes; dd ++)
+                {
+                    for (int ee = 0; ee < numberOfOutputNodes; ee++)
+                    {
+                        weightOut[dd][ee] = weightOut[dd][ee] + (float) (infinitesimalChange * derivitiveMatrixHN[dd][ee]);
+                    }
+                }
+                mFileTools.writeWeightFile(weightOut,true);
+
+            }
+            //Now change the weights by the required value
+            if (resultOfGame == PLAYERWIN)
             {
-                for (int ee = 0; ee < numberOfOutputNodes; ee++)
+                //Change the input weights
+                float[][] weightIn = mFileTools.readInputWeights();
+                for (int dd = 0; dd < numberOfHiddenNodes; dd ++)
                 {
-                    weightOut[dd][ee] = weightOut[dd][ee] - (float) (infinitesimalChange * derivitiveMatrixHN[dd][ee]);
+                    for (int ee = 0; ee < numberOfInputNodes; ee++)
+                    {
+                        weightIn[ee][dd] = weightIn[ee][dd] - (float) (infinitesimalChange * derivitiveMatrixIN[ee][dd]);
+                    }
                 }
-            }
+                mFileTools.writeWeightFile(weightIn,false);
 
+                //Change the hidden weights
+                float[][] weightOut = mFileTools.readOutputWeights();
+                for (int dd = 0; dd < numberOfOutputNodes; dd ++)
+                {
+                    for (int ee = 0; ee < numberOfHiddenNodes; ee++)
+                    {
+                        weightOut[ee][dd] = weightOut[ee][dd] - (float) (infinitesimalChange * derivitiveMatrixHN[ee][dd]);
+                    }
+                }
+                mFileTools.writeWeightFile(weightOut,true);
+
+
+            }
 
 
 

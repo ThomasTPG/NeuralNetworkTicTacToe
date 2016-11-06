@@ -37,6 +37,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button train = (Button) findViewById(R.id.train_button);
+        train.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, TrainAI.class);
+                startActivity(i);
+                finish();
+
+            }
+        });
+
 
     }
 

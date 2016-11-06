@@ -48,13 +48,49 @@ public class FileTools {
 
     public void createInputWeightFile()
     {
-        createWeightFile(inputWeightFile, numberOfHiddenNodoes, numberOfInputNodes);
+        createWeightFile(inputWeightFile, numberOfInputNodes, numberOfHiddenNodoes);
     }
 
     public void createOutputWeightFile()
     {
-        createWeightFile(outputWeightFile, numberOfOutputNodes, numberOfHiddenNodoes);
+        createWeightFile(outputWeightFile, numberOfHiddenNodoes, numberOfOutputNodes);
     }
+
+    private void updateWeightFile(float[][] matrix, int cols, int rows, File file)
+    {
+        file.delete();
+        try {
+            FileWriter fileWriter = new FileWriter(file);
+            BufferedWriter out = new BufferedWriter(fileWriter);
+            for (int ii = 0; ii < rows; ii ++)
+            {
+                String randomLine = "";
+                for (int jj = 0; jj < cols; jj ++)
+                {
+                    randomLine = randomLine + String.valueOf(matrix[jj][ii]) + deliminator;
+                }
+                out.write(randomLine);
+                out.newLine();
+            }
+            out.close();
+            fileWriter.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void writeWeightFile(float[][] matrix, boolean hidden)
+    {
+        if (hidden)
+        {
+            updateWeightFile(matrix, numberOfHiddenNodoes, numberOfOutputNodes, outputWeightFile);
+        }
+        else
+        {
+            updateWeightFile(matrix, numberOfInputNodes, numberOfHiddenNodoes, inputWeightFile);
+        }
+    }
+
 
     private void createWeightFile(File file, int rows, int cols)
     {
@@ -63,10 +99,10 @@ public class FileTools {
             try {
                 FileWriter fileWriter = new FileWriter(file);
                 BufferedWriter out = new BufferedWriter(fileWriter);
-                for (int ii = 0; ii < rows; ii ++)
+                for (int ii = 0; ii < cols; ii ++)
                 {
                     String randomLine = "";
-                    for (int jj = 0; jj < cols; jj ++)
+                    for (int jj = 0; jj < rows; jj ++)
                     {
                         float random = (float) (Math.random() * 0.1);
                         randomLine = randomLine + String.valueOf(random) + deliminator;
@@ -88,18 +124,19 @@ public class FileTools {
     }
 
 
-    private float[][] readArrayFromFile(int rows, int cols, File file)
+    private float[][] readArrayFromFile(int cols, int rows, File file)
     {
-        float[][] weights = new float[rows][cols];
+        float[][] weights = new float[cols][rows];
 
         try
         {
             BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-            for (int jj = 0; jj < cols; jj ++)
+            for (int jj = 0; jj < rows; jj ++)
             {
                 String line = fileReader.readLine();
+
                 String[] splitLine = line.split(deliminator);
-                for (int ii = 0; ii < rows; ii++)
+                for (int ii = 0; ii < cols; ii++)
                 {
                     weights[ii][jj] = Float.valueOf(splitLine[ii]);
                 }
